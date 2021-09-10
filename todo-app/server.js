@@ -10,7 +10,7 @@ let mongodb  = require('mongodb')
 //initialize express
 let app = express()
 
-//initialize mongodb
+//initialize mongodb. Settings from mongodb dashboard connections
 let db
 let connectionString = 'mongodb+srv://todoappuser:todoappuser@cluster0.t01yh.mongodb.net/todoapp?retryWrites=true&w=majority'
 mongodb.MongoClient.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true}, function(err, client){
@@ -53,6 +53,9 @@ app.get('/', function(req, res){
             
             <ul class="list-group pb-5">
                 ${items.map(function(i){
+                    //CRUD
+                    //READ
+                    
                     //this will dynamically load each item from the mongodb database
                     //the 'i' holds the value from the array
                     //the .join() will separate each item by empty space
@@ -61,7 +64,7 @@ app.get('/', function(req, res){
                         <span class="item-text">${i.text}</span>
                         <div> 
                             <button data-id="${i._id}" class="edit-me btn btn-secondary btn-sm mr-1">Edit</button>
-                            <button class="delete-me btn btn-danger btn-sm">Delete</button>
+                            <button data-id="${i._id}" class="delete-me btn btn-danger btn-sm">Delete</button>
                         </div>
                     </li>
                     `
@@ -96,6 +99,14 @@ app.post('/update-todolists', function(req, res){
     //this will receive the the request from axios.
     //containing the id of the item and the user input from the prompt
     db.collection("todolists").findOneAndUpdate({_id: new mongodb.ObjectId(req.body.id)}, {$set: {text: req.body.text}}, function(){
+        res.send("Success")
+    })
+})
+
+app.post('/delete-todolists', function(req, res){
+    //CRUD
+    //DELETE
+    db.collection("todolists").deleteOne({_id: new mongodb.ObjectId(req.body.id)}, function(){
         res.send("Success")
     })
 })
