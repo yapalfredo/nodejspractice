@@ -1,7 +1,18 @@
+//import express
 let express = require('express')
+//import mongodb
+let mongodb  = require('mongodb').MongoClient
 
 //initialize express
 let app = express()
+
+//initialize mongodb
+let db
+let connectionString = 'mongodb+srv://todoappuser:todoappuser@cluster0.t01yh.mongodb.net/todoapp?retryWrites=true&w=majority'
+mongodb.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true}, function(err, client){
+    db = client.db()
+    app.listen(3000)
+})
 
 //this make express to add all form values to the body object,
 //then add that body object to the req object,
@@ -62,9 +73,20 @@ app.get("/", function(req, res){
     `)
 })
 
+//this listener will response to the user
+//everytime new todo item is added
 app.post("/add-item", function(req, res){
-    console.log(req.body.todoItem)
-    res.send("this listener is working")
+    //CRUD
+
+    //INSERT
+    db.collection("todolists").insertOne({text: req.body.todoItem}, function(){
+        res.send("this listener is working")
+    })
+
 })
 
-app.listen(3000)
+
+//app.listen(3000)
+//Transferred was inside mongdo db anonymous function body
+//to make sure that app will only listen after the
+//connection to the database is established.
