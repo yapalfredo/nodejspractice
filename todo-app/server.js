@@ -3,6 +3,7 @@
 //npm install nodemon
 
 //import express
+const { json } = require('express')
 let express = require('express')
 //import mongodb
 let mongodb  = require('mongodb')
@@ -43,29 +44,29 @@ app.get('/', function(req, res){
             <h1 class="display-4 text-center py-1">To-Do App</h1>
             
             <div class="jumbotron p-3 shadow-sm">
-              <form action="/add-item" method="POST">
+              <form id="formNewTask" action="/create-todolists" method="POST">
                 <div class="d-flex align-items-center">
-                  <input name="todoItem" autofocus autocomplete="off" class="form-control mr-3" type="text" style="flex: 1;">
+                  <input id="inputNewTask" name="todoItem" autofocus autocomplete="off" class="form-control mr-3" type="text" style="flex: 1;">
                   <button class="btn btn-primary">Add New Item</button>
                 </div>
               </form>
             </div>
             
-            <ul class="list-group pb-5">
+            <ul id="listToDos" class="list-group pb-5">
                 ${items.map(function(i){
                     //CRUD
                     //READ
-                    
+
                     //this will dynamically load each item from the mongodb database
                     //the 'i' holds the value from the array
                     //the .join() will separate each item by empty space
                     return `
                     <li class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">
-                        <span class="item-text">${i.text}</span>
-                        <div> 
-                            <button data-id="${i._id}" class="edit-me btn btn-secondary btn-sm mr-1">Edit</button>
-                            <button data-id="${i._id}" class="delete-me btn btn-danger btn-sm">Delete</button>
-                        </div>
+                    <span class="item-text">${i.text}</span>
+                    <div> 
+                        <button data-id="${i._id}" class="edit-me btn btn-secondary btn-sm mr-1">Edit</button>
+                        <button data-id="${i._id}" class="delete-me btn btn-danger btn-sm">Delete</button>
+                    </div>
                     </li>
                     `
                 }).join('')}
@@ -82,13 +83,22 @@ app.get('/', function(req, res){
 
 //this listener will response to the user
 //everytime new todo item is added
-app.post('/add-item', function(req, res){
+app.post('/create-todolists', function(req, res){
     //CRUD
     //INSERT
-    db.collection("todolists").insertOne({text: req.body.todoItem}, function(){
-        //res.send("this listener is working")
-        //this redirects back to home everytime an item is added
-        res.redirect('/')
+    db.collection("todolists").insertOne({text: req.body.text}, function(err, info){
+        if(err){
+            console.log("error occured while inserting")
+        } else {
+            //Tutorial doesn't work anymore so I needed to improvise
+            //This will create a new object with _id: and text fields
+           let newlyInsertedInfo = {
+            _id: info.insertedId,
+            text: req.body.text
+           }
+           //This send back a response containing the newly created info
+           res.json(newlyInsertedInfo)
+        }
     })
 })
 

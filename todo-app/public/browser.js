@@ -1,5 +1,32 @@
 //We use axios library to do asynchronus tasks to MongoDB
 
+
+function listTemplate(i){
+    return `<li class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">
+            <span class="item-text">${i.text}</span>
+            <div> 
+                <button data-id="${i._id}" class="edit-me btn btn-secondary btn-sm mr-1">Edit</button>
+                <button data-id="${i._id}" class="delete-me btn btn-danger btn-sm">Delete</button>
+            </div>
+            </li>`
+}
+
+//will store the value that was inputted by the user
+let inputField = document.getElementById("inputNewTask")
+
+//CREATE FEATURE
+document.getElementById("formNewTask").addEventListener("submit", function(e){
+    e.preventDefault()
+    axios.post('/create-todolists', {text: inputField.value}).then(function(response) {
+        //Will create html for the new item
+        document.getElementById("listToDos").insertAdjacentHTML("beforeend", listTemplate(response.data))
+        inputField.value = ""
+        inputField.focus()
+    }).catch(function(){
+        console.log("Something error happened during inserting document")
+    })
+})
+
 document.addEventListener("click", function(e){
     //UPDATE FEATUREE
     if (e.target.classList.contains("edit-me")){
@@ -15,7 +42,7 @@ document.addEventListener("click", function(e){
                 //this will update the text value in the <span> tag holding the name of the item
                 e.target.parentElement.parentElement.querySelector(".item-text").innerHTML = userInput
             }).catch(function(){
-                console.log("Something error happened")
+                console.log("Something error happened during updation of the todos")
             })
         }
     }
@@ -27,7 +54,7 @@ document.addEventListener("click", function(e){
                 //This will remove item from HTML after MongoDB is done processing on its end
                 e.target.parentElement.parentElement.remove()
             }).catch(function(){
-                console.log("Something error happened")
+                console.log("Something error happened during the deletion of the todos")
             })
         }
     }
