@@ -13,6 +13,13 @@ let sanitizeHTML = require("sanitize-html");
 //initialize express
 let app = express();
 
+//This makes sure that the app will work locally on a computer
+//and also in heroku's computer with dynamic port
+let port = process.env.PORT
+if (port == null || port == ""){
+  port = 3000
+}
+
 //initialize mongodb. Settings from mongodb dashboard connections
 let db;
 let connectionString =
@@ -22,7 +29,7 @@ mongodb.MongoClient.connect(
   { useNewUrlParser: true, useUnifiedTopology: true },
   function (err, client) {
     db = client.db();
-    app.listen(3000);
+    app.listen(port);
   }
 );
 
