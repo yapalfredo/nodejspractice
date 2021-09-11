@@ -52,27 +52,14 @@ app.get('/', function(req, res){
               </form>
             </div>
             
-            <ul id="listToDos" class="list-group pb-5">
-                ${items.map(function(i){
-                    //CRUD
-                    //READ
-
-                    //this will dynamically load each item from the mongodb database
-                    //the 'i' holds the value from the array
-                    //the .join() will separate each item by empty space
-                    return `
-                    <li class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">
-                    <span class="item-text">${i.text}</span>
-                    <div> 
-                        <button data-id="${i._id}" class="edit-me btn btn-secondary btn-sm mr-1">Edit</button>
-                        <button data-id="${i._id}" class="delete-me btn btn-danger btn-sm">Delete</button>
-                    </div>
-                    </li>
-                    `
-                }).join('')}
-            </ul>
+            <ul id="listToDos" class="list-group pb-5"></ul>
             
           </div>
+          <script>
+            <!-- This will render the todos item locally -->
+            let items = ${JSON.stringify(items)}
+          </script>
+          
           <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
           <script src="/browser.js"></script>  
         </body>

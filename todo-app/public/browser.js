@@ -1,6 +1,9 @@
 //We use axios library to do asynchronus tasks to MongoDB
 
+//will store the value that was inputted by the user
+let inputField = document.getElementById("inputNewTask")
 
+//This function will be used to populate or read the list of todos
 function listTemplate(i){
     return `<li class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">
             <span class="item-text">${i.text}</span>
@@ -11,8 +14,12 @@ function listTemplate(i){
             </li>`
 }
 
-//will store the value that was inputted by the user
-let inputField = document.getElementById("inputNewTask")
+// Inital Page Load Rendering
+let initialHTML =  items.map(function(initalList){
+    return listTemplate(initalList)
+}).join('')
+
+document.getElementById("listToDos").insertAdjacentHTML("beforeend", initialHTML)
 
 //CREATE FEATURE
 document.getElementById("formNewTask").addEventListener("submit", function(e){
