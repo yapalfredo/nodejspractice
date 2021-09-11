@@ -19,6 +19,14 @@ You can also delete an item.
 It has a basic authentication feature "WWW-Authenticate" to block unauthorized access.  
 This app is working for me 100%, and successfully deployed online via [Heroku](https://yaptodoapp.herokuapp.com/)  
 
+## What does this app lack?
+Since this was a really simple, I didn't find the importance in following the application development standard.  
+With a tiny application like this I think I can still get away with it.  
+Here are three things that this app is lacking:  
+1.) Code Organization. There was no separation of the interface and logic codes.  
+2.) Multi-user support. Right now, only me can login in to it.  
+3.) Not enough details.  
+
 ## What's the stack used on this project?
 MongoDB, Express, NodeJS.  
 APIs: For asynchronus calls I used Axios. For for extra layer of security, I also used sanitize-html.  
