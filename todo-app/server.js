@@ -3,34 +3,54 @@
 //npm install nodemon
 
 //import express
-const { json } = require('express')
-let express = require('express')
+const { json } = require("express");
+let express = require("express");
 //import mongodb
-let mongodb  = require('mongodb')
+let mongodb = require("mongodb");
 
 //initialize express
-let app = express()
+let app = express();
 
 //initialize mongodb. Settings from mongodb dashboard connections
-let db
-let connectionString = 'mongodb+srv://todoappuser:todoappuser@cluster0.t01yh.mongodb.net/todoapp?retryWrites=true&w=majority'
-mongodb.MongoClient.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true}, function(err, client){
-    db = client.db()
-    app.listen(3000)
-})
+let db;
+let connectionString =
+  "mongodb+srv://todoappuser:todoappuser@cluster0.t01yh.mongodb.net/todoapp?retryWrites=true&w=majority";
+mongodb.MongoClient.connect(
+  connectionString,
+  { useNewUrlParser: true, useUnifiedTopology: true },
+  function (err, client) {
+    db = client.db();
+    app.listen(3000);
+  }
+);
 
-app.use(express.static('public'))
+app.use(express.static("public"));
 
 //this make express to add all form values to the body object,
 //then add that body object to the req object,
 //this makes it easy to access form data (or json in asynchronus request)
-app.use(express.json())
-app.use(express.urlencoded({extended: false}))
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
-app.get('/', function(req, res){
-    //mongodb way of saying Read or Load -> find()
-    db.collection('todolists').find().toArray(function(err, items){
-        res.send(`
+function passwordProtected(req, res, next) {
+  res.set("WWW-Authenticate", 'Basic realm="Simple Todo App"');
+  if (req.headers.authorization == "Basic bm9kZWpzOm5vZGVqcw==") {
+    next();
+  } else {
+      res.status(401).send("Authentication Required!")
+  }
+}
+
+//This will tell express to use this function for all routes
+app.use(passwordProtected)
+
+//HOMEPAGE
+app.get("/",  function (req, res) {
+  //mongodb way of saying Read or Load -> find()
+  db.collection("todolists")
+    .find()
+    .toArray(function (err, items) {
+      res.send(`
         <!DOCTYPE html>
         <html>
         <head>
@@ -64,49 +84,59 @@ app.get('/', function(req, res){
           <script src="/browser.js"></script>  
         </body>
         </html>
-        `)  
-    })
-})
+        `);
+    });
+});
 
 //this listener will response to the user
 //everytime new todo item is added
-app.post('/create-todolists', function(req, res){
-    //CRUD
-    //INSERT
-    db.collection("todolists").insertOne({text: req.body.text}, function(err, info){
-        if(err){
-            console.log("error occured while inserting")
-        } else {
-            //Tutorial doesn't work anymore so I needed to improvise
-            //This will create a new object with _id: and text fields
-           let newlyInsertedInfo = {
-            _id: info.insertedId,
-            text: req.body.text
-           }
-           //This send back a response containing the newly created info
-           res.json(newlyInsertedInfo)
-        }
-    })
-})
+app.post("/create-todolists", function (req, res) {
+  //CRUD
+  //INSERT
+  db.collection("todolists").insertOne(
+    { text: req.body.text },
+    function (err, info) {
+      if (err) {
+        console.log("error occured while inserting");
+      } else {
+        //Tutorial doesn't work anymore so I needed to improvise
+        //This will create a new object with _id: and text fields
+        let newlyInsertedInfo = {
+          _id: info.insertedId,
+          text: req.body.text,
+        };
+        //This send back a response containing the newly created info
+        res.json(newlyInsertedInfo);
+      }
+    }
+  );
+});
 
-app.post('/update-todolists', function(req, res){
-    //CRUD
-    //UPDATE
+app.post("/update-todolists", function (req, res) {
+  //CRUD
+  //UPDATE
 
-    //this will receive the the request from axios.
-    //containing the id of the item and the user input from the prompt
-    db.collection("todolists").findOneAndUpdate({_id: new mongodb.ObjectId(req.body.id)}, {$set: {text: req.body.text}}, function(){
-        res.send("Success")
-    })
-})
+  //this will receive the the request from axios.
+  //containing the id of the item and the user input from the prompt
+  db.collection("todolists").findOneAndUpdate(
+    { _id: new mongodb.ObjectId(req.body.id) },
+    { $set: { text: req.body.text } },
+    function () {
+      res.send("Success");
+    }
+  );
+});
 
-app.post('/delete-todolists', function(req, res){
-    //CRUD
-    //DELETE
-    db.collection("todolists").deleteOne({_id: new mongodb.ObjectId(req.body.id)}, function(){
-        res.send("Success")
-    })
-})
+app.post("/delete-todolists", function (req, res) {
+  //CRUD
+  //DELETE
+  db.collection("todolists").deleteOne(
+    { _id: new mongodb.ObjectId(req.body.id) },
+    function () {
+      res.send("Success");
+    }
+  );
+});
 
 //app.listen(3000)
 //Transferred was inside mongdo db anonymous function body
