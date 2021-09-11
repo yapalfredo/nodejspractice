@@ -7,6 +7,8 @@ const { json } = require("express");
 let express = require("express");
 //import mongodb
 let mongodb = require("mongodb");
+//import sanitize-html
+let sanitizeHTML = require("sanitize-html");
 
 //initialize express
 let app = express();
@@ -32,20 +34,21 @@ app.use(express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+//This will be called first before homepage
 function passwordProtected(req, res, next) {
   res.set("WWW-Authenticate", 'Basic realm="Simple Todo App"');
   if (req.headers.authorization == "Basic bm9kZWpzOm5vZGVqcw==") {
     next();
   } else {
-      res.status(401).send("Authentication Required!")
+    res.status(401).send("Authentication Required!");
   }
 }
 
 //This will tell express to use this function for all routes
-app.use(passwordProtected)
+app.use(passwordProtected);
 
 //HOMEPAGE
-app.get("/",  function (req, res) {
+app.get("/", function (req, res) {
   //mongodb way of saying Read or Load -> find()
   db.collection("todolists")
     .find()
@@ -91,10 +94,17 @@ app.get("/",  function (req, res) {
 //this listener will response to the user
 //everytime new todo item is added
 app.post("/create-todolists", function (req, res) {
+  //This makes use of sanitize-html feature
+  //This adds extra layer of security. It will make sure
+  //That only safe text are added in the list
+  let safeText = sanitizeHTML(req.body.text, {
+    allowedTags: [],
+    allowedAttributes: {},
+  });
   //CRUD
   //INSERT
   db.collection("todolists").insertOne(
-    { text: req.body.text },
+    { text: safeText },
     function (err, info) {
       if (err) {
         console.log("error occured while inserting");
@@ -113,6 +123,10 @@ app.post("/create-todolists", function (req, res) {
 });
 
 app.post("/update-todolists", function (req, res) {
+  let safeText = sanitizeHTML(req.body.text, {
+    allowedTags: [],
+    allowedAttributes: {},
+  });
   //CRUD
   //UPDATE
 
@@ -120,7 +134,7 @@ app.post("/update-todolists", function (req, res) {
   //containing the id of the item and the user input from the prompt
   db.collection("todolists").findOneAndUpdate(
     { _id: new mongodb.ObjectId(req.body.id) },
-    { $set: { text: req.body.text } },
+    { $set: { text: safeText } },
     function () {
       res.send("Success");
     }
