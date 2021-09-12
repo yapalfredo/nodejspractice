@@ -21,8 +21,8 @@ This app is working for me 100%, and successfully deployed online via [Heroku](h
 
 ## What does this app lack?
 Since this was a really simple web application, I didn't find the importance in following the standard application development design.  
-With a tiny application like this, I don't think it would make sense to implement a software architectural pattern like MVC.
-I enjoyed creating this application, but here are three things that this app is lacking:  
+With a tiny application like this, I don't think it would make sense to implement a software architectural pattern like MVC.  
+I enjoyed creating this application but here are three things that this app is lacking:  
 1.) Code Organization. There was no separation of the interface and logic codes.  
 2.) Multi-user support. Right now, only me can login in to it.  
 3.) Not enough details.  
