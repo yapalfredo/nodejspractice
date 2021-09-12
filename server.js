@@ -23,7 +23,7 @@ if (port == null || port == ""){
 //initialize mongodb. Settings from mongodb dashboard connections
 let db;
 let connectionString =
-  "mongodb+srv://todoappuser:todoappuser@cluster0.t01yh.mongodb.net/todoapp?retryWrites=true&w=majority";
+  "mongodb+srv://<username>:<password>@cluster0.t01yh.mongodb.net/todoapp?retryWrites=true&w=majority";
 mongodb.MongoClient.connect(
   connectionString,
   { useNewUrlParser: true, useUnifiedTopology: true },
